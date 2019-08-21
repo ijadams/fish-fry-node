@@ -1,0 +1,22 @@
+# NPM & YARN #
+##############
+.idea/*
+node_modules/
+.npm
+.yarn-integrity
+package-lock.json
+yarn.lock
+
+# Logs #
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+results/
+config/
+app_dependencies.json
+cordovaApp/
+Dockerfile
+dockerize.sh
+.dockerignore
+npm-debug.log
