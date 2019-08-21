@@ -1,9 +1,9 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const url = `https://www.nola.com/news/communities/crescent_city/article_a316d1b2-5bfb-55a0-90a6-bcb69c27de7d.html`;
 const fs = require('fs');
+const constants = require('./food-constants');
 
-axios.get(url)
+axios.get(constants.url)
     .then(res => {
         if (res.status !== 200)
             return 'err fetching url';
@@ -20,9 +20,10 @@ axios.get(url)
                 startTime: text.match(/\d{1,2}(\.\d{1,2})? ?([a|p].m.|noon)/) ? text.match(/\d{1,2}(\.\d{1,2})? ?([a|p].m.|noon)/)[0] : null,
                 endTime: text.match(/\d{1,2}(\.\d{1,2})? ?([a|p].m.,|noon,)/) ? text.match(/\d{1,2}(\.\d{1,2})? ?([a|p].m.,|noon,)/)[0] : null,
                 everyFriday: text.toLowerCase().match('every friday') ? text.toLowerCase().match('every friday').length > 0 : false,
-                dates: text.match(/(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{1,2})[^.]+[.]/),
-                telephone: text.match(/(?:(?:\+?([1-9]|[0-9][0-9]|[0-9][0-9][0-9])\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([0-9][1-9]|[0-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?/),
+                dates: text.match(/(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{1,2})[^.]+[.]/g),
+                telephone: text.match(/(?:(?:\+?([1-9]|[0-9][0-9]|[0-9][0-9][0-9])\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([0-9][1-9]|[0-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?/g),
                 email: text.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/),
+                food: constants.getFood(text, constants.foodLexicon)
             };
             data.push(obj);
         }
