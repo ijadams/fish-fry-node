@@ -16,7 +16,7 @@ axios.get(constants.url)
             const text = $(`.asset #asset-content p:nth-of-type(${i})`).text().toString();
             const obj = {
                 title: text.match('^[^:]*') ? text.match('^[^:]*')[0] : null,
-                street: text.match(/\d{1,3}.?\d{0,3}\s[a-zA-Z]{2,30}\s[a-zA-Z]{2,15}/) ? text.match(/\d{1,3}.?\d{0,3}\s[a-zA-Z]{2,30}\s[a-zA-Z]{2,15}/)[0] : null,
+                street: text.match(/\d{1,3}.?\d{0,3}\s?.[a-zA-Z]{2,30}?.\s[a-zA-Z]{2,15}/) ? text.match(/\d{1,3}.?\d{0,3}\s?.[a-zA-Z]{2,30}?.\s[a-zA-Z]{2,15}/)[0] : null,
                 startTime: text.match(/\d{1,2}(\.\d{1,2})? ?([a|p].m.|noon)/) ? text.match(/\d{1,2}(\.\d{1,2})? ?([a|p].m.|noon)/)[0] : null,
                 endTime: text.match(/\d{1,2}(\.\d{1,2})? ?([a|p].m.,|noon,)/) ? text.match(/\d{1,2}(\.\d{1,2})? ?([a|p].m.,|noon,)/)[0] : null,
                 everyFriday: text.toLowerCase().match('every friday') ? text.toLowerCase().match('every friday').length > 0 : false,
