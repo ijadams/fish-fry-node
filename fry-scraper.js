@@ -2,6 +2,17 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const constants = require('./food-constants');
+const NodeGeocoder = require('node-geocoder');
+import {googleApi} from './credentials';
+const options = {
+    provider: 'google',
+
+    // Optional depending on the providers
+    httpAdapter: 'https', // Default
+    apiKey: googleApi, // for Mapquest, OpenCage, Google Premier
+    formatter: null         // 'gpx', 'string', ...
+};
+const geocoder = NodeGeocoder(options);
 
 axios.get(constants.url)
     .then(res => {
@@ -25,6 +36,15 @@ axios.get(constants.url)
                 email: text.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/),
                 food: constants.getFood(text, constants.foodLexicon)
             };
+            geocoder.geocode(`${obj.street} new orleans la`)
+                .then(function(res) {
+                    obj.geo = res;
+                    console.log(res);
+                })
+                .catch(function(err) {
+                    console.log(err);
+                });
+
             data.push(obj);
         }
         let json = {data: data};
