@@ -16,11 +16,13 @@ const options = {
 };
 const geocoder = NodeGeocoder(options);
 
+let globalState = null;
+
 axios.get(constants.url)
     .then(res => {
         if (res.status !== 200)
             return 'err fetching url';
-        const data = [];
+        let data = [];
         const html = res.data;
         const $ = cheerio.load(html);
         const body = $('.asset #asset-content p');
@@ -38,20 +40,30 @@ axios.get(constants.url)
                 email: text.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/),
                 food: constants.getFood(text, constants.foodLexicon)
             };
-
-            geocoder.geocode(`${obj.street} new orleans la`)
-                .then(res => {
-                    obj.geo = res;
-                }, err => {
-                   console.log('err', err);
-                });
-
             data.push(obj);
         }
-        let json = {data: data};
+        globalState = data;
+        return Promise.resolve(data);
+    }).then(res => {
+        return Promise.all(res.map(location => {
+            return geocoder.geocode(`${location.street} new orleans la`)
+                .then(res => {
+                    return res;
+                }, err => {
+                    console.log('err', err);
+                });
+        }));
+    }).then(res => {
+        globalState.forEach((l, i) => {
+            l.geo = res[i];
+        });
+        let json = {data: globalState};
         json = JSON.stringify(json);
         fs.writeFile('fish-fry.json', json, 'utf8', (err) => {
             return err;
         });
         console.log('*** fish fries scraped 🤘 ***');
-    }, err => console.log(err));
+        return Promise.resolve();
+    }, err => {
+        console.log('err', err);
+    });
