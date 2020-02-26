@@ -25,10 +25,10 @@ axios.get(constants.url)
         let data = [];
         const html = res.data;
         const $ = cheerio.load(html);
-        const body = $('.asset #asset-content p');
+        const section = $('body section');
         // skip first 2 and last 2 p tags as they are not locations
-        for (let i = 3; i < body.length; i++) {
-            const text = $(`.asset #asset-content p:nth-of-type(${i})`).text().toString();
+        for (let i = 0; i < section.length; i++) {
+            const text = $(`body section:nth-of-type(${i})`).text().toString();
             const obj = {
                 title: text.match('^[^:]*') ? text.match('^[^:]*')[0] : null,
                 street: text.match(/\d{1,3}.?\d{0,3}\s?.[a-zA-Z]{2,30}?.\s[a-zA-Z]{2,15}/) ? text.match(/\d{1,3}.?\d{0,3}\s?.[a-zA-Z]{2,30}?.\s[a-zA-Z]{2,15}/)[0] : null,
